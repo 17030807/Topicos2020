@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -24,13 +25,13 @@ public class Memorama extends Stage implements EventHandler {
     private Label lblTarjetas;
     private TextField txtNoTarjetas;
     private Button btnAceptar, btnAceptar2;
-    private HBox hBox;
+    private HBox hBox, hbCartas;
     private VBox vBox;
     private GridPane gdpMesa;
     private Button[][] arTarjetas;
     private String[][] arAsignacion;
 
-    private int noPares, carta1x, carta1y, carta2x, carta2y, intentos;
+    private int noPares, carta1x, carta1y, carta2x, carta2y, intentos, correctas, contador =0, vueltas = 0;
     private boolean carArriba;
     private Scene escena;
     private Image image = new Image("sample/assets/carta_base.jpg");
@@ -50,6 +51,7 @@ public class Memorama extends Stage implements EventHandler {
         imagen.setPreserveRatio(true);
         carArriba = false;
         intentos = 0;
+        correctas = 0;
         lblTarjetas = new Label("Número de Pares:");
         txtNoTarjetas = new TextField();
         btnAceptar = new Button("Voltear y revolver");
@@ -70,7 +72,8 @@ public class Memorama extends Stage implements EventHandler {
 
         gdpMesa = new GridPane();
         vBox = new VBox();
-        vBox.getChildren().addAll(hBox,gdpMesa);
+        hbCartas = new HBox();
+        vBox.getChildren().addAll(hBox);
 
         escena = new Scene (vBox,500,500);
     }
@@ -81,7 +84,7 @@ public class Memorama extends Stage implements EventHandler {
         noPares = Integer.parseInt(txtNoTarjetas.getText());
 
         vBox.getChildren().remove(gdpMesa);
-
+        hbCartas = new HBox();
         gdpMesa = new GridPane();
         arAsignacion = new String[2][noPares];
         revolver();
@@ -89,7 +92,7 @@ public class Memorama extends Stage implements EventHandler {
         arTarjetas = new Button[2][noPares];
         for (int i=0; i<2; i++){
             for( int j=0; j<noPares; j++){
-
+                vueltas++;
                 Image img = new Image("sample/assets/carta_base.jpg");
                 ImageView imv = new ImageView(img);
                 imv.setFitHeight(120);
@@ -102,12 +105,26 @@ public class Memorama extends Stage implements EventHandler {
                 arTarjetas[i][j].setGraphic(imv);
                 arTarjetas[i][j].setPrefSize(80,120);
 
-                gdpMesa.add(arTarjetas[i][j],j,i);
+                if(contador < 4){
+                    hbCartas.getChildren().add(arTarjetas[i][j]);
+                    contador++;
+                }
+                else {
+                    vBox.getChildren().add(hbCartas);
 
+                    hbCartas = new HBox();
+                    hbCartas.getChildren().add(arTarjetas[i][j]);
+                    contador= 1;
+
+                }
+                if(noPares%4 != 0 && vueltas==(noPares*2)){
+                    vBox.getChildren().add(hbCartas);
+                }
+                //gdpMesa.add(arTarjetas[i][j],j,i);
             }
         }
 
-        vBox.getChildren().add(gdpMesa);
+        //vBox.getChildren().add(gdpMesa);
     }
 
     private void verTarjeta(int finalI, int finalJ) {
@@ -119,12 +136,7 @@ public class Memorama extends Stage implements EventHandler {
         arTarjetas[finalI][finalJ].setGraphic(imv);
 
         System.out.println("en linea " + carArriba);
-        try {
-            Thread.sleep(550);
-        }
-        catch (Exception e){
 
-        }
         if (!carArriba){
             carta1x = finalI;
             carta1y = finalJ;
@@ -145,16 +157,18 @@ public class Memorama extends Stage implements EventHandler {
 
     }
 
+     void volCartas(int x1, int x2, int y1, int y2){
+         arTarjetas[x1][x2].setGraphic(imagen);
+         arTarjetas[y1][y2].setGraphic(imagen);
+     }
+
     void comCartas(int x1, int x2, int y1, int y2){
         if (arAsignacion[x1][x2] != arAsignacion[y1][y2]){
-            arTarjetas[x1][x2].setGraphic(imagen);
-            arTarjetas[x1][x2].setPrefSize(80,120);
-            arTarjetas[y1][y2].setGraphic(imagen);
-            arTarjetas[y1][y2].setPrefSize(80,120);
             intentos++;
             carArriba = false;
             arTarjetas[x1][x2].setDisable(false);
             arTarjetas[y1][y2].setDisable(false);
+            volCartas(x1,x2,y1,y2);
 
         }
         else {
@@ -163,7 +177,16 @@ public class Memorama extends Stage implements EventHandler {
             arTarjetas[x1][x2].setDisable(true);
             arTarjetas[y1][y2].setDisable(true);
             intentos++;
+            correctas++;
             carArriba = false;
+            System.out.println("Correctas "+correctas);
+        }
+        if (correctas == noPares){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Felicidades");
+            alert.setHeaderText("Has completado el juego en "+ intentos + " intentos");
+            alert.showAndWait();
+            this.close();
         }
         System.out.println("intentos " + intentos);
     }
