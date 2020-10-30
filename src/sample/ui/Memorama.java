@@ -36,6 +36,7 @@ public class Memorama extends Stage implements EventHandler {
     private Scene escena;
     private Image image = new Image("sample/assets/carta_base.jpg");
     private ImageView imagen = new ImageView(image);
+    Thread hilo = new Thread();
 
     public Memorama(){
 
@@ -77,6 +78,15 @@ public class Memorama extends Stage implements EventHandler {
 
         escena = new Scene (vBox,500,500);
     }
+
+    EventHandler<MouseEvent> handler = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+
+        }
+    };
+
+
 
     @Override
     public void handle(Event event) {
@@ -127,7 +137,7 @@ public class Memorama extends Stage implements EventHandler {
         //vBox.getChildren().add(gdpMesa);
     }
 
-    private void verTarjeta(int finalI, int finalJ) {
+    private void verTarjeta(int finalI, int finalJ){
 
         Image img = new Image("sample/assets/"+arAsignacion[finalI][finalJ]);
         ImageView imv = new ImageView(img);
@@ -135,8 +145,25 @@ public class Memorama extends Stage implements EventHandler {
         imv.setPreserveRatio(true);
         arTarjetas[finalI][finalJ].setGraphic(imv);
 
+
+
         System.out.println("en linea " + carArriba);
 
+        try{
+            hilo.stop();
+            hilo.start();
+        }
+        catch (Exception e){
+
+        }
+        revCarta(finalI,finalJ);
+
+
+
+
+    }
+
+    void revCarta(int finalI, int finalJ){
         if (!carArriba){
             carta1x = finalI;
             carta1y = finalJ;
@@ -153,13 +180,25 @@ public class Memorama extends Stage implements EventHandler {
             comCartas(carta1x,carta1y,carta2x,carta2y);
 
         }
-
-
     }
 
      void volCartas(int x1, int x2, int y1, int y2){
-         arTarjetas[x1][x2].setGraphic(imagen);
-         arTarjetas[y1][y2].setGraphic(imagen);
+         Image img = new Image("sample/assets/carta_base.jpg");
+         ImageView imv = new ImageView(img);
+         imv.setFitHeight(120);
+         imv.setPreserveRatio(true);
+
+         arTarjetas[x1][x2].setPrefSize(80,120);
+         arTarjetas[x1][x2].setGraphic(imv);
+
+
+         Image img2 = new Image("sample/assets/carta_base.jpg");
+         ImageView imv2 = new ImageView(img2);
+         imv2.setFitHeight(120);
+         imv2.setPreserveRatio(true);
+
+         arTarjetas[y1][y2].setPrefSize(80,120);
+         arTarjetas[y1][y2].setGraphic(imv2);
      }
 
     void comCartas(int x1, int x2, int y1, int y2){

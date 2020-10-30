@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sample.models.Conexion;
 import sample.ui.Memorama;
 import sample.ui.Taquimecanografo;
 
@@ -39,7 +40,7 @@ public class Main extends Application implements EventHandler  {
 
         primaryStage.show();
 
-
+        Conexion.crearConeccion();
     }
 
     private void CrearUI() {
