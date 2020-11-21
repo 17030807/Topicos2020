@@ -1,8 +1,11 @@
 package sample.ui;
 
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
 public class Restaurant extends Stage {
+
+    private TableView<>
 
     public Restaurant(){
         CreaUI();
